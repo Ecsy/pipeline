@@ -21,7 +21,6 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/banzaicloud/pipeline/api/ark/common"
-	"github.com/banzaicloud/pipeline/internal/ark/api"
 	"github.com/banzaicloud/pipeline/internal/platform/gin/correlationid"
 )
 
@@ -35,11 +34,9 @@ func Status(c *gin.Context) {
 	if err != nil {
 		err = errors.New("backup service not deployed")
 		logger.Error(err.Error())
-		common.ErrorResponse(c, err)
+		common.ErrorResponseWithStatus(c, http.StatusNotFound, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, api.BackupServiceStatusResponse{
-		Status: http.StatusOK,
-	})
+	c.Status(http.StatusOK)
 }

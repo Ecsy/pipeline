@@ -43,8 +43,3 @@ type EnableBackupServiceResponse struct {
 type DisableBackupServiceResponse struct {
 	Status int `json:"status"`
 }
-
-// BackupServiceStatusResponse describes Pipeline's BackupServiceStatusResponse API response
-type BackupServiceStatusResponse struct {
-	Status int `json:"status"`
-}

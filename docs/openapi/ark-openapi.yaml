@@ -83,7 +83,7 @@ paths:
           description: record not found
           content: { application/json: { schema: { $ref: '#/components/schemas/NotFound' } } }
   '/api/v1/orgs/{orgId}/clusters/{id}/backupservice/status':
-    get:
+    head:
       security:
         - bearerAuth: []
       tags:
@@ -97,13 +97,10 @@ paths:
       responses:
         '200':
           description: ARK service running
-          content: { application/json: { schema: { $ref: '#/components/schemas/ARKStatusResponse' } } }
-        '400':
-          description: Error during processing request
-          content: { application/json: { schema: { $ref: '#/definitions/BaseError_400' } } }
         '401':
           description: Unauthorized
-          content: { application/json: { schema: { $ref: '#/components/schemas/Unauthorized' } } }
+        '404':
+          description: ARK service not deployed
   '/api/v1/orgs/{orgId}/backupbuckets':
     post:
       security:
@@ -734,8 +731,6 @@ components:
     DeleteBackupBucketResponse:
       "$ref": "#/definitions/DeleteBackupBucketResponse"
 
-    ARKStatusResponse:
-      "$ref": "#/definitions/ARKStatusResponse"
     EnableARKResponse:
       "$ref": "#/definitions/EnableARKResponse"
     EnableARKRequest:
@@ -1101,12 +1096,6 @@ definitions:
         type: integer
         example: 200
   EnableARKResponse:
-    type: object
-    properties:
-      status:
-        type: integer
-        example: 200
-  ARKStatusResponse:
     type: object
     properties:
       status:
