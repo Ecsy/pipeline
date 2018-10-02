@@ -245,6 +245,10 @@ func (bus BanzaiUserStorer) Save(schema *auth.Schema, context *auth.Context) (us
 		orgids = append(orgids, githubOrgIDs...)
 		AddOrgRoles(orgids...)
 		AddOrgRoleForUser(currentUser.ID, orgids...)
+
+		for _, orgID := range orgids {
+			authEventer.OrganizationRegistered(orgID)
+		}
 	}
 
 	return currentUser, fmt.Sprint(db.NewScope(currentUser).PrimaryKeyValue()), err
