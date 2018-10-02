@@ -136,9 +136,10 @@ func init() {
 
 	viper.SetDefault("ark.name", "ark")
 	viper.SetDefault("ark.namespace", "pipeline-infra")
-	viper.SetDefault("ark.chart", "stable/ark")
-	viper.SetDefault("ark.image", "waynz0r/ark")
-	viper.SetDefault("ark.imagetag", "schedule-labels-fix")
+	viper.SetDefault("ark.chart", "banzaicloud-stable/ark")
+	viper.SetDefault("ark.chart_version", "1.2.1")
+	viper.SetDefault("ark.image", "banzaicloud/ark")
+	viper.SetDefault("ark.imagetag", "v0.9.6")
 	viper.SetDefault("ark.pullpolicy", "IfNotPresent")
 
 	ReleaseName := os.Getenv("KUBERNETES_RELEASE_NAME")

@@ -36,6 +36,10 @@ func IsProviderSupported(provider string) error {
 	switch provider {
 	case providers.Google:
 		return nil
+	case providers.Amazon:
+		return nil
+	case providers.Azure:
+		return nil
 	default:
 		return pkgErrors.ErrorNotSupportedCloudType
 	}

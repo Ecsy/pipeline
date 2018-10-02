@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package google
+package azure
 
 import (
 	"time"
@@ -21,7 +21,7 @@ import (
 
 	"github.com/banzaicloud/pipeline/internal/providers"
 	"github.com/banzaicloud/pipeline/pkg/objectstore"
-	googleObjectstore "github.com/banzaicloud/pipeline/pkg/providers/google/objectstore"
+	azureObjectstore "github.com/banzaicloud/pipeline/pkg/providers/azure/objectstore"
 	pkgSecret "github.com/banzaicloud/pipeline/pkg/secret"
 )
 
@@ -32,24 +32,19 @@ type objectStore struct {
 // NewObjectStore creates a new objectStore
 func NewObjectStore(ctx providers.ObjectStoreContext) (cloudprovider.ObjectStore, error) {
 
-	config := googleObjectstore.Config{
-		Region: ctx.Location,
+	config := azureObjectstore.Config{
+		StorageAccount: ctx.StorageAccount,
+		ResourceGroup:  ctx.ResourceGroup,
 	}
 
-	credentials := googleObjectstore.Credentials{
-		Type:                   ctx.Secret.Values[pkgSecret.Type],
-		ProjectID:              ctx.Secret.Values[pkgSecret.ProjectId],
-		PrivateKeyID:           ctx.Secret.Values[pkgSecret.PrivateKeyId],
-		PrivateKey:             ctx.Secret.Values[pkgSecret.PrivateKey],
-		ClientEmail:            ctx.Secret.Values[pkgSecret.ClientEmail],
-		ClientID:               ctx.Secret.Values[pkgSecret.ClientId],
-		AuthURI:                ctx.Secret.Values[pkgSecret.AuthUri],
-		TokenURI:               ctx.Secret.Values[pkgSecret.TokenUri],
-		AuthProviderX50CertURL: ctx.Secret.Values[pkgSecret.AuthX509Url],
-		ClientX509CertURL:      ctx.Secret.Values[pkgSecret.ClientX509Url],
+	credentials := azureObjectstore.Credentials{
+		ClientID:       ctx.Secret.Values[pkgSecret.AzureClientId],
+		ClientSecret:   ctx.Secret.Values[pkgSecret.AzureClientSecret],
+		TenantID:       ctx.Secret.Values[pkgSecret.AzureTenantId],
+		SubscriptionID: ctx.Secret.Values[pkgSecret.AzureSubscriptionId],
 	}
 
-	os, err := googleObjectstore.New(config, credentials)
+	os, err := azureObjectstore.New(config, credentials)
 	if err != nil {
 		return nil, err
 	}

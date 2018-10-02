@@ -16,10 +16,18 @@ package api
 
 // CreateBucketRequest describes create bucket request
 type CreateBucketRequest struct {
-	Cloud      string
-	BucketName string
-	Location   string
-	SecretID   string
+	Cloud      string `json:"cloud" binding:"required"`
+	BucketName string `json:"bucketName" binding:"required"`
+	SecretID   string `json:"secretId" binding:"required"`
+	Location   string `json:"location" binding:"required"`
+
+	AzureBucketProperties `json:"azure,omitempty"`
+}
+
+// AzureObjectStoreBucketProperties describes bucket properties for an Azure ObjectStore Container
+type AzureBucketProperties struct {
+	StorageAccount string `json:"storageAccount"`
+	ResourceGroup  string `json:"resourceGroup"`
 }
 
 // FindBucketRequest describes a find bucket request
@@ -31,11 +39,12 @@ type FindBucketRequest struct {
 
 // Bucket describes a Bucket used for ARK backups
 type Bucket struct {
-	ID                  uint   `json:"id"`
-	Name                string `json:"name"`
-	Cloud               string `json:"cloud"`
-	SecretID            string `json:"secretId"`
-	Location            string `json:"location,omitempty"`
+	ID       uint   `json:"id"`
+	Name     string `json:"name"`
+	Cloud    string `json:"cloud"`
+	SecretID string `json:"secretId"`
+	Location string `json:"location,omitempty"`
+	AzureBucketProperties
 	Status              string `json:"status"`
 	InUse               bool   `json:"inUse"`
 	DeploymentID        uint   `json:"deploymentId,omitempty"`

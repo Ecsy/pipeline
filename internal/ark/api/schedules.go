@@ -21,6 +21,10 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 )
 
+const (
+	BaseScheduleName = "cluster-backup"
+)
+
 // CreateScheduleRequest describes a create schedule request
 type CreateScheduleRequest struct {
 	Name     string          `json:"name" binding:"required"`

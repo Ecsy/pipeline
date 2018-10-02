@@ -27,10 +27,12 @@ import (
 type ClusterBackupBucketsModel struct {
 	ID uint `gorm:"primary_key"`
 
-	Cloud      string
-	SecretID   string
-	BucketName string
-	Location   string
+	Cloud          string
+	SecretID       string
+	BucketName     string
+	Location       string
+	StorageAccount string
+	ResourceGroup  string
 
 	Status        string
 	StatusMessage string `sql:"type:text;"`
@@ -70,8 +72,12 @@ func (m *ClusterBackupBucketsModel) ConvertModelToEntity() *api.Bucket {
 		Cloud:    m.Cloud,
 		SecretID: m.SecretID,
 		Location: m.Location,
-		Status:   m.Status,
-		InUse:    inUse,
+		AzureBucketProperties: api.AzureBucketProperties{
+			StorageAccount: m.StorageAccount,
+			ResourceGroup:  m.ResourceGroup,
+		},
+		Status: m.Status,
+		InUse:  inUse,
 
 		DeploymentID:        m.Deployment.ID,
 		ClusterID:           m.Deployment.Cluster.ID,

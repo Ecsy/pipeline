@@ -34,6 +34,7 @@ import (
 
 	"github.com/banzaicloud/pipeline/auth"
 	"github.com/banzaicloud/pipeline/internal/ark/api"
+	"github.com/banzaicloud/pipeline/internal/providers"
 )
 
 // BucketsService is for buckets related ARK functions
@@ -64,24 +65,27 @@ func NewBucketsService(
 }
 
 // GetObjectStoreForBucket create an initialized ObjectStore
-func (s *BucketsService) GetObjectStoreForBucket(bucket *api.Bucket) (*ObjectStore, error) {
+func (s *BucketsService) GetObjectStoreForBucket(bucket *api.Bucket) (cloudprovider.ObjectStore, error) {
 
 	secret, err := GetSecretWithValidation(bucket.SecretID, s.org.ID, bucket.Cloud)
 	if err != nil {
-		return nil, errors.Wrap(err, "error validating create bucket request")
+		return nil, errors.Wrap(err, "could not get secret with validation")
 	}
 
-	os, err := NewObjectStore(bucket.Cloud)
+	ctx := providers.ObjectStoreContext{
+		Provider:       bucket.Cloud,
+		Secret:         secret,
+		Location:       bucket.Location,
+		StorageAccount: bucket.StorageAccount,
+		ResourceGroup:  bucket.ResourceGroup,
+	}
+
+	os, err := NewObjectStore(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "error validating create bucket request")
+		return nil, errors.Wrap(err, "could not initialize object store client")
 	}
 
-	err = os.Initialize(secret)
-	if err != nil {
-		return nil, err
-	}
-
-	return &os, nil
+	return os, nil
 }
 
 // GetBackupsFromObjectStore gets Backups from object store bucket
@@ -92,7 +96,7 @@ func (s *BucketsService) GetBackupsFromObjectStore(bucket *api.Bucket) ([]*arkAP
 		return nil, err
 	}
 
-	svc := cloudprovider.NewBackupService(*os, s.logger)
+	svc := cloudprovider.NewBackupService(os, s.logger)
 	backups, err := svc.GetAllBackups(bucket.Name)
 	if err != nil {
 		return nil, err
@@ -321,7 +325,7 @@ func (s *BucketsService) streamObjectFromObjectStore(
 		return err
 	}
 
-	svc := cloudprovider.NewBackupService(*os, s.logger)
+	svc := cloudprovider.NewBackupService(os, s.logger)
 
 	url, err := svc.CreateSignedURL(target, bucket.Name, backupName, 10*time.Minute)
 	if err != nil {

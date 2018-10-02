@@ -37,6 +37,7 @@ type RestoreResults struct {
 
 // Restore describes an ARK restore
 type Restore struct {
+	ID               uint           `json:"id"`
 	UID              string         `json:"uid"`
 	Name             string         `json:"name"`
 	BackupName       string         `json:"backupName"`

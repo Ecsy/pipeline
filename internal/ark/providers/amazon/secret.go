@@ -12,18 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package google
+package amazon
 
 import (
-	"encoding/json"
-
+	pkgSecret "github.com/banzaicloud/pipeline/pkg/secret"
 	"github.com/banzaicloud/pipeline/secret"
+	"github.com/pelletier/go-toml"
 )
+
+type secretContents struct {
+	Credentials credentials `toml:"default"`
+}
+
+type credentials struct {
+	KeyID string `toml:"aws_access_key_id"`
+	Key   string `toml:"aws_secret_access_key"`
+}
 
 // GetSecret gets formatted secret for ARK
 func GetSecret(secret *secret.SecretItemResponse) (string, error) {
 
-	values, err := json.Marshal(secret.Values)
+	a := secretContents{
+		Credentials: credentials{
+			KeyID: secret.Values[pkgSecret.AwsAccessKeyId],
+			Key:   secret.Values[pkgSecret.AwsSecretAccessKey],
+		},
+	}
+
+	values, err := toml.Marshal(a)
 	if err != nil {
 		return "", err
 	}

@@ -21,6 +21,7 @@ import (
 
 	"github.com/banzaicloud/pipeline/auth"
 	"github.com/banzaicloud/pipeline/internal/ark/api"
+	"github.com/banzaicloud/pipeline/model"
 )
 
 // BucketsRepository descibes a repository for storing ARK backup buckets
@@ -86,6 +87,15 @@ func (s *BucketsRepository) GetActiveDeploymentModel(bucket *ClusterBackupBucket
 		return
 	}
 
+	var cluster model.ClusterModel
+	err = s.db.Model(deployment).Related(&cluster, "Cluster").Error
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			err = errors.Wrap(err, "error getting deployment")
+		}
+		return
+	}
+
 	return
 }
 
@@ -114,9 +124,11 @@ func (s *BucketsRepository) FindOneOrCreateByRequest(req *api.CreateBucketReques
 	var bucket ClusterBackupBucketsModel
 
 	err := s.db.FirstOrInit(&bucket, ClusterBackupBucketsModel{
-		Cloud:      req.Cloud,
-		BucketName: req.BucketName,
-		Location:   req.Location,
+		Cloud:          req.Cloud,
+		BucketName:     req.BucketName,
+		Location:       req.Location,
+		StorageAccount: req.StorageAccount,
+		ResourceGroup:  req.ResourceGroup,
 
 		OrganizationID: s.org.ID,
 	}).Error

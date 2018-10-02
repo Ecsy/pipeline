@@ -17,6 +17,6 @@ package google
 const (
 	// PersistentVolumeProvider is a config value for ARK
 	PersistentVolumeProvider = "gcp"
-	// ObjectStorageProvider is a config value for ARK
-	ObjectStorageProvider = "gcp"
+	// BackupStorageProvider is a config value for ARK
+	BackupStorageProvider = "gcp"
 )

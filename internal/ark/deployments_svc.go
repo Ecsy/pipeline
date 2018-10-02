@@ -120,18 +120,34 @@ func (s *DeploymentsService) Deploy(bucket *ClusterBackupBucketsModel, restoreMo
 		}
 	}
 
-	secret, err := GetSecretWithValidation(bucket.SecretID, s.org.ID, bucket.Cloud)
+	clusterSecret, err := s.cluster.GetSecretWithValidation()
 	if err != nil {
-		return errors.Wrap(err, "error getting secret")
+		return errors.Wrap(err, "error getting cluster secret")
+	}
+
+	bucketSecret, err := GetSecretWithValidation(bucket.SecretID, s.org.ID, bucket.Cloud)
+	if err != nil {
+		return errors.Wrap(err, "error getting bucket secret")
 	}
 
 	config, err := s.getChartConfig(ConfigRequest{
-		Cloud:          s.cluster.GetCloud(),
-		Secret:         secret,
-		RestoreMode:    restoreMode,
-		BucketLocation: bucket.Location,
-		BucketName:     bucket.BucketName,
-		BucketProvider: bucket.Cloud,
+		Cloud:       s.cluster.GetCloud(),
+		Location:    s.cluster.GetLocation(),
+		CloudSecret: clusterSecret,
+
+		Bucket: BucketConfig{
+			Provider: bucket.Cloud,
+			Name:     bucket.BucketName,
+			Location: bucket.Location,
+			AzureBucketConfig: AzureBucketConfig{
+				StorageAccount: bucket.StorageAccount,
+				ResourceGroup:  bucket.ResourceGroup,
+			},
+		},
+		BucketSecret: bucketSecret,
+
+		RBAC:        s.cluster.RbacEnabled(),
+		RestoreMode: restoreMode,
 	})
 	if err != nil {
 		return errors.Wrap(err, "error service getting config")
@@ -153,7 +169,7 @@ func (s *DeploymentsService) Deploy(bucket *ClusterBackupBucketsModel, restoreMo
 		config.Name,
 		config.ValueOverrides,
 		"InstallArk",
-		"",
+		config.Version,
 		deployTimeout,
 	)
 	if err != nil {

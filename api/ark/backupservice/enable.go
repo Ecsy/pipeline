@@ -44,7 +44,15 @@ func Enable(c *gin.Context) {
 		return
 	}
 
-	_, err := svc.GetDeploymentsService().GetActiveDeployment()
+	scheduleTTL, err := time.ParseDuration(request.TTL)
+	if err != nil {
+		err = errors.Wrap(err, "error parsing request")
+		logger.Error(err.Error())
+		common.ErrorResponse(c, err)
+		return
+	}
+
+	_, err = svc.GetDeploymentsService().GetActiveDeployment()
 	if err == nil {
 		err = errors.New("backup service already deployed")
 		logger.Error(err.Error())
@@ -58,6 +66,10 @@ func Enable(c *gin.Context) {
 		BucketName: request.BucketName,
 		Location:   request.Location,
 		SecretID:   request.SecretID,
+		AzureBucketProperties: api.AzureBucketProperties{
+			StorageAccount: request.StorageAccount,
+			ResourceGroup:  request.ResourceGroup,
+		},
 	})
 	if err != nil {
 		err = emperror.Wrap(err, "error persisting bucket")
@@ -81,20 +93,19 @@ func Enable(c *gin.Context) {
 		return
 	}
 
-	duration, _ := time.ParseDuration("5m")
 	spec := &api.CreateBackupRequest{
-		Name:   "pipeline-full-backup",
+		Name:   api.BaseScheduleName,
 		Labels: request.Labels,
 		TTL: metav1.Duration{
-			Duration: duration,
+			Duration: scheduleTTL,
 		},
 	}
 
 	if spec.Labels == nil {
 		spec.Labels = make(labels.Set, 0)
 	}
-	spec.Labels["pipeline-distribution"] = svc.GetDeploymentsService().GetCluster().GetDistribution()
-	spec.Labels["pipeline-cloud"] = svc.GetDeploymentsService().GetCluster().GetCloud()
+	spec.Labels[api.LabelKeyDistribution] = svc.GetDeploymentsService().GetCluster().GetDistribution()
+	spec.Labels[api.LabelKeyCloud] = svc.GetDeploymentsService().GetCluster().GetCloud()
 
 	err = svc.GetSchedulesService().Create(spec, request.Schedule)
 	if err != nil {

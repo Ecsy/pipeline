@@ -19,6 +19,8 @@ import (
 
 	"github.com/banzaicloud/pipeline/auth"
 	"github.com/banzaicloud/pipeline/internal/ark/api"
+	"github.com/banzaicloud/pipeline/internal/providers"
+	pkgProviders "github.com/banzaicloud/pipeline/pkg/providers"
 )
 
 // ValidateCreateBucketRequest validates a CreateBucketRequest
@@ -29,12 +31,13 @@ func ValidateCreateBucketRequest(req *api.CreateBucketRequest, org *auth.Organiz
 		return errors.Wrap(err, req.Cloud)
 	}
 
-	if req.Cloud == "amazon" {
-		if req.Location == "" {
-			return errors.Wrap(errors.New("location must not be empty"), "error validating create bucket request")
+	if req.Cloud == pkgProviders.Azure {
+		if req.ResourceGroup == "" {
+			return errors.Wrap(errors.New("resourceGroup must not be empty"), "error validating create bucket request")
 		}
-	} else {
-		req.Location = ""
+		if req.StorageAccount == "" {
+			return errors.Wrap(errors.New("storageAccount must not be empty"), "error validating create bucket request")
+		}
 	}
 
 	secret, err := GetSecretWithValidation(req.SecretID, org.ID, req.Cloud)
@@ -42,11 +45,18 @@ func ValidateCreateBucketRequest(req *api.CreateBucketRequest, org *auth.Organiz
 		return errors.Wrap(err, "error validating create bucket request")
 	}
 
-	os, err := NewObjectStore(req.Cloud)
+	ctx := providers.ObjectStoreContext{
+		Provider:       req.Cloud,
+		Secret:         secret,
+		Location:       req.Location,
+		ResourceGroup:  req.ResourceGroup,
+		StorageAccount: req.StorageAccount,
+	}
+
+	os, err := NewObjectStore(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error validating create bucket request")
 	}
-	os.Initialize(secret)
 
 	_, err = os.ListCommonPrefixes(req.BucketName, "/")
 	if err != nil {

@@ -14,6 +14,10 @@
 
 package api
 
+import (
+	"github.com/banzaicloud/pipeline/secret"
+)
+
 // Cluster interface for cluster implementations
 type Cluster interface {
 	GetID() uint
@@ -21,4 +25,7 @@ type Cluster interface {
 	GetCloud() string
 	GetDistribution() string
 	GetK8sConfig() ([]byte, error)
+	GetSecretWithValidation() (*secret.SecretItemResponse, error)
+	GetLocation() string
+	RbacEnabled() bool
 }

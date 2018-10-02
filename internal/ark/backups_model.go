@@ -71,6 +71,7 @@ func (backup *ClusterBackupsModel) ConvertModelToEntity() *api.Backup {
 	state := backup.GetStateObject()
 
 	item := &api.Backup{
+		ID:               backup.ID,
 		UID:              backup.UID,
 		Name:             backup.Name,
 		TTL:              state.Spec.TTL,

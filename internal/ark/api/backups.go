@@ -52,6 +52,7 @@ type PersistBackupRequest struct {
 
 // Backup describes an ARK backup
 type Backup struct {
+	ID               uint                                `json:"id"`
 	UID              string                              `json:"uid"`
 	Name             string                              `json:"name"`
 	TTL              metav1.Duration                     `json:"ttl"`

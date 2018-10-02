@@ -17,24 +17,24 @@ package ark
 import (
 	"github.com/heptio/ark/pkg/cloudprovider"
 
+	"github.com/banzaicloud/pipeline/internal/ark/providers/amazon"
+	"github.com/banzaicloud/pipeline/internal/ark/providers/azure"
 	"github.com/banzaicloud/pipeline/internal/ark/providers/google"
+	iProviders "github.com/banzaicloud/pipeline/internal/providers"
 	pkgErrors "github.com/banzaicloud/pipeline/pkg/errors"
 	"github.com/banzaicloud/pipeline/pkg/providers"
-	"github.com/banzaicloud/pipeline/secret"
 )
 
-// ObjectStore is an interface embedding heptio/ark ObjectStore interface
-type ObjectStore interface {
-	cloudprovider.ObjectStore
-	Initialize(s *secret.SecretItemResponse) error
-}
-
 // NewObjectStore gets a initialized ObjectStore for the given provider
-func NewObjectStore(provider string) (ObjectStore, error) {
+func NewObjectStore(ctx iProviders.ObjectStoreContext) (cloudprovider.ObjectStore, error) {
 
-	switch provider {
+	switch ctx.Provider {
 	case providers.Google:
-		return google.NewObjectStore(), nil
+		return google.NewObjectStore(ctx)
+	case providers.Amazon:
+		return amazon.NewObjectStore(ctx)
+	case providers.Azure:
+		return azure.NewObjectStore(ctx)
 	default:
 		return nil, pkgErrors.ErrorNotSupportedCloudType
 	}

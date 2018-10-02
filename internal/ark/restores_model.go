@@ -91,6 +91,7 @@ func (restore *ClusterBackupRestoresModel) ConvertModelToEntity() *api.Restore {
 	results := restore.GetResults()
 
 	item := &api.Restore{
+		ID:               restore.ID,
 		UID:              restore.UID,
 		Name:             restore.Name,
 		BackupName:       state.Spec.BackupName,

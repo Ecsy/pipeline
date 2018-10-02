@@ -24,14 +24,12 @@ type PersistDeploymentRequest struct {
 
 // EnableBackupServiceRequest describes an ARK service deployment request
 type EnableBackupServiceRequest struct {
-	Cloud      string            `json:"cloud" binding:"required"`
-	BucketName string            `json:"bucketName" binding:"required"`
-	Location   string            `json:"location"`
-	SecretID   string            `json:"secretId" binding:"required"`
-	Schedule   string            `json:"schedule" binding:"required"`
-	TTL        string            `json:"ttl" binding:"required"`
-	Labels     map[string]string `json:"labels,omitempty"`
-	Options    BackupOptions     `json:"options,omitempty"`
+	CreateBucketRequest
+
+	Schedule string            `json:"schedule" binding:"required"`
+	TTL      string            `json:"ttl" binding:"required"`
+	Labels   map[string]string `json:"labels,omitempty"`
+	Options  BackupOptions     `json:"options,omitempty"`
 }
 
 // EnableBackupServiceResponse describes Pipeline's EnableBackupServiceRequest API response

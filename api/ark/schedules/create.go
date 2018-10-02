@@ -52,8 +52,8 @@ func Create(c *gin.Context) {
 	if spec.Labels == nil {
 		spec.Labels = make(labels.Set, 0)
 	}
-	spec.Labels["pipeline-distribution"] = svc.GetDeploymentsService().GetCluster().GetDistribution()
-	spec.Labels["pipeline-cloud"] = svc.GetDeploymentsService().GetCluster().GetCloud()
+	spec.Labels[api.LabelKeyDistribution] = svc.GetDeploymentsService().GetCluster().GetDistribution()
+	spec.Labels[api.LabelKeyCloud] = svc.GetDeploymentsService().GetCluster().GetCloud()
 
 	err := svc.GetSchedulesService().Create(spec, request.Schedule)
 	if err != nil {

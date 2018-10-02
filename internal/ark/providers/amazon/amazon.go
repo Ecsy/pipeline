@@ -12,21 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package google
+package amazon
 
-import (
-	"encoding/json"
-
-	"github.com/banzaicloud/pipeline/secret"
+const (
+	// PersistentVolumeProvider is a config value for ARK
+	PersistentVolumeProvider = "aws"
+	// BackupStorageProvider is a config value for ARK
+	BackupStorageProvider = "aws"
 )
-
-// GetSecret gets formatted secret for ARK
-func GetSecret(secret *secret.SecretItemResponse) (string, error) {
-
-	values, err := json.Marshal(secret.Values)
-	if err != nil {
-		return "", err
-	}
-
-	return string(values), nil
-}
