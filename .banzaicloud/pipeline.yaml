@@ -7,7 +7,7 @@ pipeline:
         image: banzaicloud/ci-pipeline-client:latest
         action: CreateCluster
         secret:
-            name: paas-dev
+            name: my-amazon-secret-367
         cluster:
             cloud: amazon
             distribution: eks
