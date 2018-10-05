@@ -9,10 +9,10 @@ pipeline:
         secret:
             name: paas-dev
         cluster:
-            cloud: google
-            distribution: gke
-            location: us-central1-a
-            name: banzai-cicd-cluster
+            cloud: amazon
+            distribution: eks
+            location: us-west-2
+            name: ekscluster-ecsy-900
             reuse: true
 
     build:
