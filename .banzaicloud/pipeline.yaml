@@ -18,7 +18,7 @@ pipeline:
     build:
         image: golang:1.11.1
         commands:
-            - make build
+            - make vendor build
 
     test:
         image: golang:1.11.1
