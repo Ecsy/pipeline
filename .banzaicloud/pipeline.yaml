@@ -16,12 +16,12 @@ pipeline:
             reuse: true
 
     build:
-        image: golang:1.10
+        image: golang:1.11.1
         commands:
             - make build
 
     test:
-        image: golang:1.10
+        image: golang:1.11.1
         commands:
             - mkdir $HOME/config
             - cp config/config.toml.example $HOME/config/config.toml
