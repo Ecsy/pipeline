@@ -7,12 +7,12 @@ pipeline:
         image: banzaicloud/ci-pipeline-client:latest
         action: CreateCluster
         secret:
-            name: my-amazon-secret-493
+            name: my-kubernetes-secret-444
         cluster:
-            cloud: amazon
-            distribution: eks
-            location: us-west-2
-            name: ekscluster-ecsy-440
+            cloud: kubernetes
+            distribution: unknown
+            location: unknown
+            name: kubernetes-ecsy-464
             reuse: true
             installsecrets: true
 
