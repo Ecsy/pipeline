@@ -14,6 +14,7 @@ pipeline:
             location: us-west-2
             name: ekscluster-ecsy-440
             reuse: true
+            installsecrets: true
 
     build:
         image: golang:1.11.1
