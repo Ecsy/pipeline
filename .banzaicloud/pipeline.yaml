@@ -20,6 +20,13 @@ pipeline:
         image: golang:1.11.1
         commands:
             - make vendor build
+        secretFrom:
+            my_username:
+                name: my-password-secret-518
+                keyRef: username
+            my_password:
+                name: my-password-secret-518
+                keyRef: password
 
     test:
         image: golang:1.11.1
