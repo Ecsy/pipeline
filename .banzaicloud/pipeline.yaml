@@ -16,6 +16,18 @@ pipeline:
             reuse: true
             installsecrets: true
 
+    build_container:
+        image: alpine
+        commands:
+        - env
+        secretFrom:
+            DOCKER_USERNAME:
+                name: my-password-secret-518
+                keyRef: username
+            DOCKER_PASSWORD:
+                name: my-password-secret-518
+                keyRef: password
+
     build:
         image: golang:1.11.1
         commands:
